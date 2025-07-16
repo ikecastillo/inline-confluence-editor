@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles for inline toolbar */
+#inline-toolbar-container {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+#inline-toolbar-container > * {
+  pointer-events: auto;
+}
+
+/* Override Confluence styles if needed */
+.inline-toolbar-button {
+  @apply transition-all duration-150 ease-in-out;
+}
+
+/* Ensure toolbar appears above Confluence elements */
+.inline-toolbar-wrapper {
+  z-index: 10000 !important;
+} 

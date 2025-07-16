@@ -18,6 +18,8 @@
         <dependency>com.atlassian.confluence.editor:editor-resources</dependency>
         <resource type="download" name="inlineeditor.css" location="/css/inlineeditor.css"/>
         <resource type="download" name="inlineeditor.js" location="/js/inlineeditor.js"/>
+        <resource type="download" name="inline-toolbar.js" location="/js/inline-toolbar.js"/>
+        <resource type="download" name="inline-toolbar.css" location="/css/inline-toolbar.css"/>
         <resource type="download" name="images/" location="/images"/>
         <context>editor</context>
         <context>editor-content</context>
