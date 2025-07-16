@@ -67,9 +67,7 @@
                         <fileset>
                             <directory>node</directory>
                         </fileset>
-                        <fileset>
-                            <directory>src/main/resources</directory>
-                        </fileset>
+
                     </filesets>
                 </configuration>
             </plugin>
