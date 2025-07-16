@@ -9,7 +9,7 @@ module.exports = (env, argv) => {
   return {
     entry: './src/index.tsx',
     output: {
-      path: path.resolve(__dirname, 'src/main/resources'),
+      path: path.resolve(__dirname, '../inlineeditor/src/main/resources'),
       filename: 'js/inline-toolbar.js',
       library: {
         name: 'InlineToolbar',
