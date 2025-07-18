@@ -6,6 +6,7 @@
   "scripts": {
     "build": "webpack --mode production",
     "build:dev": "webpack --mode development",
+    "build:analyze": "ANALYZE_BUNDLE=true webpack --mode production",
     "watch": "webpack --mode development --watch",
     "clean": "rm -rf src/main/resources/js src/main/resources/css"
   },
@@ -28,6 +29,9 @@
     "tailwindcss": "^3.4.0",
     "mini-css-extract-plugin": "^2.7.6",
     "copy-webpack-plugin": "^11.0.0",
-    "clean-webpack-plugin": "^4.0.0"
+    "clean-webpack-plugin": "^4.0.0",
+    "terser-webpack-plugin": "^5.3.9",
+    "css-minimizer-webpack-plugin": "^5.0.1",
+    "webpack-bundle-analyzer": "^4.10.1"
   }
 } 
