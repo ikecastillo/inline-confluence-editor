@@ -30,7 +30,7 @@ module.exports = (env, argv) => {
         type: 'var'
       },
       clean: {
-        keep: /\.(properties|png|jpg|jpeg|gif|svg)$/i, // Keep non-JS/CSS assets
+        keep: /\.(properties|png|jpg|jpeg|gif|svg|xml)$/i, // Keep non-JS/CSS assets including XML
       }
     },
     module: {
@@ -56,7 +56,9 @@ module.exports = (env, argv) => {
     performance: getPerformanceConfig(isProduction),
     plugins: [
       new CleanWebpackPlugin({
-        cleanOnceBeforeBuildPatterns: ['js/*', 'css/*']
+        cleanOnceBeforeBuildPatterns: ['js/*', 'css/*'],
+        dangerouslyAllowCleanPatternsOutsideProject: true,
+        dry: false
       }),
       new MiniCssExtractPlugin({
         filename: 'css/inline-toolbar.css'

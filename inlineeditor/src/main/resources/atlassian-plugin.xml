@@ -8,7 +8,7 @@
     </plugin-info>
 
     <!-- add our i18n resource -->
-    <resource type="i18n" name="i18n" location="inlineeditor"/>
+    <resource type="i18n" name="i18n" location="inline-toolbar"/>
     
     <!-- add our web resources -->
     <web-resource key="inlineeditor-resources" name="inlineeditor Web Resources">
