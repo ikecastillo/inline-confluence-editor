@@ -9,6 +9,13 @@ interface ToolbarProps {
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({ selectedText, position, onAction, onClose }) => {
+  console.log('[TOOLBAR-001] Toolbar component rendered with props:', {
+    selectedText,
+    position,
+    hasOnAction: !!onAction,
+    hasOnClose: !!onClose
+  });
+  
   const toolbarRef = useRef<HTMLDivElement>(null);
   const [showAiButton, setShowAiButton] = useState(false);
 
@@ -102,6 +109,8 @@ const Toolbar: React.FC<ToolbarProps> = ({ selectedText, position, onAction, onC
     });
   }
 
+  console.log('[TOOLBAR-002] About to render toolbar JSX');
+
   return (
     <div
       ref={toolbarRef}
@@ -109,8 +118,13 @@ const Toolbar: React.FC<ToolbarProps> = ({ selectedText, position, onAction, onC
       style={{
         left: `${position.x}px`,
         top: `${position.y + 20}px`,
-        transform: 'translateX(-50%)'
+        transform: 'translateX(-50%)',
+        backgroundColor: 'yellow', // DEBUG: bright yellow background
+        border: '3px solid blue', // DEBUG: blue border
+        minWidth: '200px',
+        minHeight: '50px'
       }}
+      onLoad={() => console.log('[TOOLBAR-003] Toolbar div loaded')}
     >
       {toolbarButtons.map((button) => (
         <button

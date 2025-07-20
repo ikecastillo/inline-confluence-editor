@@ -20,23 +20,28 @@ class InlineToolbarManager {
   private maxErrors: number = 5;
 
   constructor() {
+    console.log('[ITM-INIT-001] InlineToolbarManager constructor called');
     this.initialize();
   }
 
   private initialize() {
     try {
+      console.log('[ITM-INIT-002] Starting initialization...');
+      
       // Prevent multiple initializations
       if (this.isInitialized) {
-        console.warn('InlineToolbarManager already initialized');
+        console.warn('[ITM-INIT-003] InlineToolbarManager already initialized');
         return;
       }
 
       // Verify DOM is ready
       if (!document.body) {
-        console.warn('DOM not ready, retrying initialization...');
+        console.warn('[ITM-INIT-004] DOM not ready, retrying initialization...');
         setTimeout(() => this.initialize(), 100);
         return;
       }
+
+      console.log('[ITM-INIT-005] DOM ready, creating container...');
 
       // Create container for React toolbar
       this.container = document.createElement('div');
@@ -44,51 +49,104 @@ class InlineToolbarManager {
       this.container.style.position = 'absolute';
       this.container.style.zIndex = '9999';
       this.container.style.pointerEvents = 'none';
+      this.container.style.backgroundColor = 'rgba(255, 0, 0, 0.1)'; // DEBUG: red background
+      this.container.style.border = '2px solid red'; // DEBUG: red border
+      this.container.style.width = '200px'; // DEBUG: fixed width
+      this.container.style.height = '50px'; // DEBUG: fixed height
       document.body.appendChild(this.container);
       this.root = ReactDOM.createRoot(this.container);
+
+      console.log('[ITM-INIT-006] Container created and added to DOM, container:', this.container);
 
       // Listen for text selection in Confluence editor
       document.addEventListener('selectionchange', this.handleSelectionChange.bind(this));
       document.addEventListener('mouseup', this.handleMouseUp.bind(this));
       
+      console.log('[ITM-INIT-007] Event listeners added');
+      
       this.isInitialized = true;
-      console.log('InlineToolbarManager initialized successfully');
+      console.log('[ITM-INIT-008] InlineToolbarManager initialized successfully');
     } catch (error) {
+      console.error('[ITM-INIT-009] Initialization failed:', error);
       this.handleError('Failed to initialize InlineToolbarManager', error);
     }
   }
 
   private handleSelectionChange() {
     try {
+      console.log('[ITM-SEL-001] Selection change detected');
       const selection = window.getSelection();
-      if (!selection || selection.isCollapsed || !selection.toString().trim()) {
+      
+      if (!selection) {
+        console.log('[ITM-SEL-002] No selection object');
         this.hideToolbar();
         return;
       }
+      
+      console.log('[ITM-SEL-003] Selection details:', {
+        isCollapsed: selection.isCollapsed,
+        text: selection.toString(),
+        rangeCount: selection.rangeCount
+      });
+      
+      if (selection.isCollapsed || !selection.toString().trim()) {
+        console.log('[ITM-SEL-004] Selection is collapsed or empty, hiding toolbar');
+        this.hideToolbar();
+        return;
+      }
+      
+      console.log('[ITM-SEL-005] Valid selection found, text:', selection.toString());
     } catch (error) {
+      console.error('[ITM-SEL-006] Error in handleSelectionChange:', error);
       this.handleError('Error in handleSelectionChange', error);
     }
   }
 
   private handleMouseUp(event: MouseEvent) {
     try {
+      console.log('[ITM-MOUSE-001] Mouse up detected at:', event.clientX, event.clientY);
+      
       // Only process selection in editor area
       const target = event.target as HTMLElement;
-      if (!this.isInEditor(target)) {
+      console.log('[ITM-MOUSE-002] Target element:', target?.tagName, target?.className);
+      
+      const isInEditor = this.isInEditor(target);
+      console.log('[ITM-MOUSE-003] Is in editor:', isInEditor);
+      
+      if (!isInEditor) {
+        console.log('[ITM-MOUSE-004] Not in editor, ignoring');
         return;
       }
 
       const selection = window.getSelection();
+      console.log('[ITM-MOUSE-005] Selection after mouseup:', {
+        selection: !!selection,
+        isCollapsed: selection?.isCollapsed,
+        text: selection?.toString(),
+        rangeCount: selection?.rangeCount
+      });
+      
       if (!selection || selection.isCollapsed || !selection.toString().trim()) {
+        console.log('[ITM-MOUSE-006] No valid selection, returning');
         return;
       }
 
       if (selection.rangeCount === 0) {
+        console.log('[ITM-MOUSE-007] No ranges in selection');
         return;
       }
 
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect();
+      
+      console.log('[ITM-MOUSE-008] Range rect:', {
+        left: rect.left,
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height
+      });
       
       this.currentSelection = {
         text: selection.toString(),
@@ -96,16 +154,21 @@ class InlineToolbarManager {
         rect: rect
       };
 
+      console.log('[ITM-MOUSE-009] Calling showToolbar with selection:', this.currentSelection.text);
       this.showToolbar();
     } catch (error) {
+      console.error('[ITM-MOUSE-010] Error in handleMouseUp:', error);
       this.handleError('Error in handleMouseUp', error);
     }
   }
 
   private isInEditor(element: HTMLElement): boolean {
     try {
+      console.log('[ITM-EDITOR-001] Checking if element is in editor:', element?.tagName, element?.className);
+      
       // Null check
       if (!element || !element.closest) {
+        console.log('[ITM-EDITOR-002] Element is null or has no closest method');
         return false;
       }
 
@@ -115,17 +178,30 @@ class InlineToolbarManager {
         '#tinymce',
         '[contenteditable="true"]',
         '.editor-content-area',
-        '#content-area-panel'
+        '#content-area-panel',
+        '.ProseMirror', // Modern Confluence editor
+        '.confluence-editor' // Additional selector
       ];
 
-      return editorSelectors.some(selector => {
+      console.log('[ITM-EDITOR-003] Checking selectors:', editorSelectors);
+
+      for (const selector of editorSelectors) {
         try {
-          return element.closest(selector) !== null;
+          const found = element.closest(selector);
+          console.log(`[ITM-EDITOR-004] Selector "${selector}": ${found ? 'FOUND' : 'not found'}`);
+          if (found) {
+            console.log('[ITM-EDITOR-005] Element IS in editor via selector:', selector);
+            return true;
+          }
         } catch (e) {
-          return false;
+          console.log(`[ITM-EDITOR-006] Error checking selector "${selector}":`, e);
         }
-      });
+      }
+      
+      console.log('[ITM-EDITOR-007] Element is NOT in editor');
+      return false;
     } catch (error) {
+      console.error('[ITM-EDITOR-008] Error in isInEditor:', error);
       this.handleError('Error in isInEditor', error);
       return false;
     }
@@ -133,7 +209,17 @@ class InlineToolbarManager {
 
   private showToolbar() {
     try {
-      if (!this.currentSelection || !this.root) return;
+      console.log('[ITM-SHOW-001] showToolbar called');
+      
+      if (!this.currentSelection) {
+        console.log('[ITM-SHOW-002] No current selection');
+        return;
+      }
+      
+      if (!this.root) {
+        console.log('[ITM-SHOW-003] No React root');
+        return;
+      }
 
       const { rect, text } = this.currentSelection;
       const position = {
@@ -141,9 +227,27 @@ class InlineToolbarManager {
         y: rect.bottom + window.scrollY
       };
 
+      console.log('[ITM-SHOW-004] Toolbar position calculated:', position);
+      console.log('[ITM-SHOW-005] Selected text:', text);
+      console.log('[ITM-SHOW-006] Container element:', this.container);
+      console.log('[ITM-SHOW-007] Container visible?', this.container?.offsetWidth, this.container?.offsetHeight);
+
+      // Make container visible for debugging
+      if (this.container) {
+        this.container.style.pointerEvents = 'auto';
+        this.container.style.left = position.x + 'px';
+        this.container.style.top = position.y + 'px';
+        console.log('[ITM-SHOW-008] Container positioned at:', position.x, position.y);
+      }
+
+      console.log('[ITM-SHOW-009] Rendering toolbar component...');
+
       this.root.render(
         <ErrorBoundary
-          onError={(error, errorInfo) => this.handleError('Toolbar render error', error)}
+          onError={(error, errorInfo) => {
+            console.error('[ITM-SHOW-010] Toolbar render error:', error, errorInfo);
+            this.handleError('Toolbar render error', error);
+          }}
           fallback={
             <div style={{
               position: 'absolute',
@@ -166,18 +270,24 @@ class InlineToolbarManager {
           />
         </ErrorBoundary>
       );
+      
+      console.log('[ITM-SHOW-011] Toolbar rendered successfully');
     } catch (error) {
+      console.error('[ITM-SHOW-012] Error in showToolbar:', error);
       this.handleError('Error in showToolbar', error);
     }
   }
 
   private hideToolbar() {
     try {
+      console.log('[ITM-HIDE-001] hideToolbar called');
       if (this.root) {
         this.root.render(<></>);
+        console.log('[ITM-HIDE-002] Toolbar hidden');
       }
       this.currentSelection = null;
     } catch (error) {
+      console.error('[ITM-HIDE-003] Error in hideToolbar:', error);
       this.handleError('Error in hideToolbar', error);
     }
   }
@@ -306,14 +416,20 @@ class InlineToolbarManager {
   }
 }
 
+console.log('[ITM-LOAD-001] Inline toolbar module loaded, document.readyState:', document.readyState);
+
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
+  console.log('[ITM-LOAD-002] Document still loading, waiting for DOMContentLoaded');
   document.addEventListener('DOMContentLoaded', () => {
+    console.log('[ITM-LOAD-003] DOMContentLoaded fired, creating InlineToolbarManager');
     new InlineToolbarManager();
   });
 } else {
+  console.log('[ITM-LOAD-004] Document ready, creating InlineToolbarManager immediately');
   new InlineToolbarManager();
 }
 
 // Export for global access if needed
-(window as any).InlineToolbar = InlineToolbarManager; 
+(window as any).InlineToolbar = InlineToolbarManager;
+console.log('[ITM-LOAD-005] InlineToolbar exported to window'); 
