@@ -43,7 +43,7 @@ module.exports = (env, argv) => {
         {
           test: /\.css$/,
           use: [
-            isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
+            MiniCssExtractPlugin.loader, // ALWAYS extract CSS for plugin resources
             'css-loader',
             'postcss-loader'
           ]
@@ -56,7 +56,7 @@ module.exports = (env, argv) => {
     performance: getPerformanceConfig(isProduction),
     plugins: [
       new CleanWebpackPlugin({
-        cleanOnceBeforeBuildPatterns: ['js/*', 'css/*'],
+        cleanOnceBeforeBuildPatterns: ['js/inline-toolbar.*', 'css/inline-toolbar.*'], // Only clean our specific files
         dangerouslyAllowCleanPatternsOutsideProject: true,
         dry: false
       }),

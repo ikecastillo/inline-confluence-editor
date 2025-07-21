@@ -49,10 +49,11 @@ class InlineToolbarManager {
       this.container.style.position = 'absolute';
       this.container.style.zIndex = '9999';
       this.container.style.pointerEvents = 'none';
+      this.container.style.display = 'none'; // Initially hidden
       this.container.style.backgroundColor = 'rgba(255, 0, 0, 0.1)'; // DEBUG: red background
       this.container.style.border = '2px solid red'; // DEBUG: red border
-      this.container.style.width = '200px'; // DEBUG: fixed width
-      this.container.style.height = '50px'; // DEBUG: fixed height
+      this.container.style.minWidth = '200px'; // DEBUG: min width
+      this.container.style.minHeight = '50px'; // DEBUG: min height
       document.body.appendChild(this.container);
       this.root = ReactDOM.createRoot(this.container);
 
@@ -232,8 +233,9 @@ class InlineToolbarManager {
       console.log('[ITM-SHOW-006] Container element:', this.container);
       console.log('[ITM-SHOW-007] Container visible?', this.container?.offsetWidth, this.container?.offsetHeight);
 
-      // Make container visible for debugging
+      // Make container visible and position it
       if (this.container) {
+        this.container.style.display = 'block'; // Show container
         this.container.style.pointerEvents = 'auto';
         this.container.style.left = position.x + 'px';
         this.container.style.top = position.y + 'px';
@@ -281,6 +283,9 @@ class InlineToolbarManager {
   private hideToolbar() {
     try {
       console.log('[ITM-HIDE-001] hideToolbar called');
+      if (this.container) {
+        this.container.style.display = 'none'; // Hide container
+      }
       if (this.root) {
         this.root.render(<></>);
         console.log('[ITM-HIDE-002] Toolbar hidden');

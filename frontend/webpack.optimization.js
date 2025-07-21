@@ -9,7 +9,7 @@ const path = require('path');
  */
 function getOptimizationConfig(isProduction) {
   const config = {
-    minimize: isProduction,
+    minimize: false, // DISABLED for debugging - keep console logs
     sideEffects: false,
     usedExports: true,
     
@@ -19,14 +19,14 @@ function getOptimizationConfig(isProduction) {
     // Tree shaking and dead code elimination
     providedExports: true,
     usedExports: true,
-    concatenateModules: true,
+    concatenateModules: false, // DISABLED for debugging
     
     // Mangling and compression settings
-    mangleExports: isProduction,
+    mangleExports: false, // DISABLED for debugging
     
     // Module optimization
-    moduleIds: 'deterministic',
-    chunkIds: 'deterministic'
+    moduleIds: 'named', // Use named IDs for debugging
+    chunkIds: 'named'
   };
   
   if (isProduction) {
